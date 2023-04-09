@@ -2,7 +2,8 @@ package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.repository.UserStorage;
 
 import java.util.List;
@@ -12,20 +13,20 @@ import java.util.List;
 public class UserService {
     private final UserStorage userStorage;
 
-    public List<User> getAllUsers() {
-        return userStorage.getAllUsers();
+    public List<UserDto> getAllUsers() {
+        return UserMapper.toUserDtoList(userStorage.getAllUsers());
     }
 
-    public User getUser(Long userId) {
-        return userStorage.getUser(userId);
+    public UserDto getUser(Long userId) {
+        return UserMapper.toUserDto(userStorage.getUser(userId));
     }
 
-    public User addUser(User user) {
-        return userStorage.addUser(user);
+    public UserDto addUser(UserDto user) {
+        return UserMapper.toUserDto(userStorage.addUser(UserMapper.toUser(user)));
     }
 
-    public User updateUser(Long userId, User user) {
-        return userStorage.updateUser(userId, user);
+    public UserDto updateUser(Long userId, UserDto user) {
+        return UserMapper.toUserDto(userStorage.updateUser(userId, UserMapper.toUser(user)));
     }
 
     public Boolean deleteUser(Long userId) {

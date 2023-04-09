@@ -3,7 +3,7 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
@@ -19,27 +19,27 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping
-    public List<Item> getAllItems(@RequestHeader(USERID_HEADER) Long userId) {
+    public List<ItemDto> getAllItems(@RequestHeader(USERID_HEADER) Long userId) {
         log.info("Получен запрос на получение списка всех вещей");
         return itemService.getAllItems(userId);
     }
 
     @GetMapping("/{itemId}")
-    public Item getItem(@PathVariable Long itemId) {
+    public ItemDto getItem(@PathVariable Long itemId) {
         log.info("Получен запрос на получение вещи по ее id");
         return itemService.getItem(itemId);
     }
 
     @PostMapping
-    public Item addItem(@RequestHeader(USERID_HEADER) Long userId, @Valid @RequestBody Item item) {
+    public ItemDto addItem(@RequestHeader(USERID_HEADER) Long userId, @Valid @RequestBody ItemDto item) {
         log.info("Получен запрос на создание вещи");
         return itemService.addItem(userId, item);
     }
 
     @PatchMapping("/{itemId}")
-    public Item updateItem(@RequestHeader(USERID_HEADER) Long userId,
-                           @PathVariable Long itemId,
-                           @RequestBody Item item) {
+    public ItemDto updateItem(@RequestHeader(USERID_HEADER) Long userId,
+                              @PathVariable Long itemId,
+                              @RequestBody ItemDto item) {
         log.info("Получен запрос на обновление вещи");
         return itemService.updateItem(userId, itemId, item);
     }
@@ -51,7 +51,7 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<Item> searchItems(@RequestParam String text) {
+    public List<ItemDto> searchItems(@RequestParam String text) {
         log.info("Получен запрос на поиск вещи по части имени или описания");
         return itemService.searchItems(text);
     }

@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.repository.UserStorage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,7 +16,6 @@ import java.util.stream.Collectors;
 public class InMemoryItemStorage implements ItemStorage {
     private long lastIdNumber = 0;
     private final HashMap<Long, Item> items;
-    private final UserStorage userStorage;
 
     @Override
     public List<Item> getAllItems(Long userId) {
@@ -34,7 +32,6 @@ public class InMemoryItemStorage implements ItemStorage {
 
     @Override
     public Item addItem(Long userId, Item item) {
-        isUserExists(userId);
         item.setId(lastIdNumber + 1);
         item.setOwnerId(userId);
         items.put(item.getId(), item);
@@ -44,7 +41,6 @@ public class InMemoryItemStorage implements ItemStorage {
 
     @Override
     public Item updateItem(Long userId, Long itemId, Item item) {
-        isUserExists(userId);
         if (!items.containsKey(itemId)) {
             throw new NotFoundException("Item not found");
         }
@@ -84,9 +80,5 @@ public class InMemoryItemStorage implements ItemStorage {
                         || (i.getDescription() != null && i.getDescription().contains(text.substring(1).toLowerCase())))
                         && i.getAvailable())
                 .collect(Collectors.toList());
-    }
-
-    private void isUserExists(Long userId) {
-        userStorage.getUser(userId);
     }
 }
