@@ -1,4 +1,4 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.dto;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -10,8 +10,8 @@ import javax.validation.constraints.NotEmpty;
 
 @Data
 @Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class User {
+@FieldDefaults(level = AccessLevel.PROTECTED)
+public class UserDto {
     Long id;
     String name;
     @NotEmpty
