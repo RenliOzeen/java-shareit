@@ -39,4 +39,16 @@ public class ErrorHandler {
     public Map<String, String> handleValidationException(final MethodArgumentNotValidException e) {
         return Map.of("400 BAD REQUEST", e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleUserValidationException(final UserValidationException e) {
+        return Map.of("404 USER NOT VALID", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Map<String, String> handleUnknownStateException(final UnknownStateException e) {
+        return Map.of("error", e.getMessage());
+    }
 }

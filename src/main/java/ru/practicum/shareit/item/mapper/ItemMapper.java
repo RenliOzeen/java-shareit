@@ -1,14 +1,15 @@
 package ru.practicum.shareit.item.mapper;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+
+import lombok.RequiredArgsConstructor;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemWithCommentDto;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 public class ItemMapper {
 
     public static ItemDto toItemDto(Item item) {
@@ -17,6 +18,16 @@ public class ItemMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
+                .build();
+    }
+
+    public static ItemWithCommentDto toItemWithCommentDto(Item item) {
+        return ItemWithCommentDto.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.getAvailable())
+                .comments(new ArrayList<>())
                 .build();
     }
 
@@ -33,5 +44,11 @@ public class ItemMapper {
         List<ItemDto> itemDtoList = new ArrayList<>();
         itemList.forEach(i -> itemDtoList.add(toItemDto(i)));
         return itemDtoList;
+    }
+
+    public static List<ItemWithCommentDto> toItemWithCommentDtoList(List<Item> itemList) {
+        List<ItemWithCommentDto> itemWithCommentDtoList = new ArrayList<>();
+        itemList.forEach(i -> itemWithCommentDtoList.add(toItemWithCommentDto(i)));
+        return itemWithCommentDtoList;
     }
 }

@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.repository;
+/*package ru.practicum.shareit.item.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -19,7 +19,7 @@ public class InMemoryItemStorage implements ItemStorage {
 
     @Override
     public List<Item> getAllItems(Long userId) {
-        return items.values().stream().filter(i -> Objects.equals(i.getOwnerId(), userId)).collect(Collectors.toList());
+        return items.values().stream().filter(i -> Objects.equals(i.getOwner().getId(), userId)).collect(Collectors.toList());
     }
 
     @Override
@@ -81,4 +81,4 @@ public class InMemoryItemStorage implements ItemStorage {
                         && i.getAvailable())
                 .collect(Collectors.toList());
     }
-}
+}*/

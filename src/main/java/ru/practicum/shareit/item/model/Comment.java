@@ -1,10 +1,11 @@
-package ru.practicum.shareit.request;
+package ru.practicum.shareit.item.model;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.user.User;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
 
 @Data
@@ -12,18 +13,26 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "requests")
+@Table(name = "comments")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ItemRequest {
+public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
+    @NotEmpty
     @Column(nullable = false)
-    String description;
+    String text;
+
+    @Column(name = "item_id", nullable = false)
+    Long itemId;
+
     @ManyToOne
-    @JoinColumn(name = "requestor_id")
-    User requestor;
-    @Column(name = "create_date")
-    LocalDateTime createDate;
+    @JoinColumn(name = "author_id")
+    User author;
+
+    @Column(name = "created", nullable = false)
+    LocalDateTime created;
+
 
 }
