@@ -18,6 +18,7 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -30,6 +31,7 @@ public class BookingServiceImpl implements BookingService {
     private final ItemRepository itemRepository;
 
     @Override
+    @Transactional
     public BookingDto addBooking(Long userId, BookingSimplyDto booking) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User was not found"));
         Item item = itemRepository.findById(booking.getItemId()).orElseThrow(() -> new NotFoundException("Item was not found"));
@@ -46,6 +48,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public BookingDto approveBookingRequest(Long userId, Long bookingId) {
         checkUserExists(userId);
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException("Booking was not found"));
@@ -61,6 +64,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public BookingDto rejectBookingRequest(Long userId, Long bookingId) {
         checkUserExists(userId);
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException("Booking was not found"));

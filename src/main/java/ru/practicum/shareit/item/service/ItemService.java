@@ -19,6 +19,7 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -74,6 +75,7 @@ public class ItemService {
         return itemWithCommentDto;
     }
 
+    @Transactional
     public ItemDto addItem(Long userId, ItemDto item) {
         User owner = userStorage.findById(userId).orElseThrow(() -> new NotFoundException("This user was not found"));
 
@@ -82,6 +84,7 @@ public class ItemService {
         return ItemMapper.toItemDto(itemStorage.save(newItem));
     }
 
+    @Transactional
     public ItemDto updateItem(Long userId, Long itemId, ItemDto item) {
         if (!userStorage.existsById(userId)) {
             throw new NotFoundException("This user was not found");
@@ -103,6 +106,7 @@ public class ItemService {
         return ItemMapper.toItemDto(itemStorage.save(updateItem));
     }
 
+    @Transactional
     public Boolean deleteItem(Long itemId) {
         if (!itemStorage.existsById(itemId)) {
             throw new NotFoundException("This item was not found");
@@ -118,6 +122,7 @@ public class ItemService {
         return ItemMapper.toItemDtoList(itemStorage.findAllByNameOrDescriptionContainingIgnoreCaseAndAvailableIsTrue(text, text));
     }
 
+    @Transactional
     public CommentDto addComment(Long userId, Long itemId, CommentDto commentDto) {
         User user = userStorage.findById(userId).orElseThrow(() -> new NotFoundException("This user was not found"));
         itemStorage.findById(itemId).orElseThrow(() -> new NotFoundException("This item was not found"));

@@ -8,6 +8,7 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -24,10 +25,12 @@ public class UserService {
         return UserMapper.toUserDto(user);
     }
 
+    @Transactional
     public UserDto addUser(UserDto user) {
         return UserMapper.toUserDto(userStorage.save(UserMapper.toUser(user)));
     }
 
+    @Transactional
     public UserDto updateUser(Long userId, UserDto user) {
         User savedUser = userStorage.findById(userId).orElseThrow(() -> new NotFoundException("this user was not found"));
         User updateUser = User.builder()
@@ -39,6 +42,7 @@ public class UserService {
         return UserMapper.toUserDto(userStorage.save(updateUser));
     }
 
+    @Transactional
     public Boolean deleteUser(Long userId) {
         if (!userStorage.existsById(userId)) {
             throw new NotFoundException("User was not found");
