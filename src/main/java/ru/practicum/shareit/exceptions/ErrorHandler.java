@@ -17,12 +17,6 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public Map<String, String> handleUserAlreadyExistsException(final AlreadyExistsException e) {
-        return Map.of("409 ALREADY EXISTS", e.getMessage());
-    }
-
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleInvalidArgsException(final InvalidArgumentsException e) {
         return Map.of("400 BAD REQUEST", e.getMessage());
