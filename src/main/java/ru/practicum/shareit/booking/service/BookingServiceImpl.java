@@ -17,7 +17,7 @@ import ru.practicum.shareit.exceptions.UnknownStateException;
 import ru.practicum.shareit.exceptions.UserValidationException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import javax.transaction.Transactional;
