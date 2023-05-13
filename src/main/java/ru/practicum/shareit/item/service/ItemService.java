@@ -16,6 +16,7 @@ import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -33,6 +34,7 @@ public class ItemService {
     private final CommentRepository commentRepository;
     private final BookingRepository bookingRepository;
 
+    private final ItemRequestRepository itemRequestRepository;
     public List<ItemWithCommentDto> getAllItems(Long userId) {
         if (!userStorage.existsById(userId)) {
             throw new NotFoundException("This user was not found");
@@ -81,6 +83,9 @@ public class ItemService {
 
         Item newItem = ItemMapper.toItem(item);
         newItem.setOwner(owner);
+        if(item.getRequestId()!=null) {
+            newItem.setRequest(itemRequestRepository.findById(item.getRequestId()).orElseThrow(() -> new NotFoundException("This request was not found")));
+        }
         return ItemMapper.toItemDto(itemStorage.save(newItem));
     }
 
@@ -127,7 +132,7 @@ public class ItemService {
         User user = userStorage.findById(userId).orElseThrow(() -> new NotFoundException("This user was not found"));
         itemStorage.findById(itemId).orElseThrow(() -> new NotFoundException("This item was not found"));
 
-        List<Booking> bookings = bookingRepository.findAllByBookerIdAndEndDateIsBefore(userId, LocalDateTime.now());
+        List<Booking> bookings = bookingRepository.findAllByBookerIdAndEndDateIsBeforeOrderByStartDateDesc(userId, LocalDateTime.now());
         if (bookings.stream().anyMatch(b -> Objects.equals(b.getItem().getId(), itemId)
                 && Objects.equals(b.getBooker().getId(), userId))) {
             commentDto.setAuthorName(user.getName());

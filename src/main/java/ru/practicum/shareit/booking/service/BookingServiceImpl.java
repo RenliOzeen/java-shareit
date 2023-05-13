@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingSimplyDto;
 import ru.practicum.shareit.booking.model.Booking;
@@ -41,7 +43,7 @@ public class BookingServiceImpl implements BookingService {
         if (booking.getEnd().isBefore(booking.getStart()) || booking.getEnd().equals(booking.getStart())) {
             throw new InvalidArgumentsException("End date before start date");
         }
-        if (Objects.equals(item.getOwner().getId(), user.getId())) {
+        if (Objects.equals(item.getOwner().getId(), userId)) {
             throw new UserValidationException("Booker is the owner of item");
         }
         return BookingMapper.toBookingDto(bookingRepository.save(BookingMapper.toBooking(booking, item, user)));
@@ -91,34 +93,38 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getAllBookingsForBookerOrItemOwner(Long userId, String state, boolean isBooker) {
+    public List<BookingDto> getAllBookingsForBookerOrItemOwner(Long userId, String state, Integer from, Integer size, boolean isBooker) {
+        if(from<0 || size<=0) {
+            throw new InvalidArgumentsException("'from' and 'size' should be positive");
+        }
         checkUserExists(userId);
         try {
             BookingState.valueOf(state.toUpperCase());
         } catch (Exception e) {
             throw new UnknownStateException("Unknown state: UNSUPPORTED_STATUS");
         }
+        PageRequest pageRequest = PageRequest.of((from / size), size, Sort.by("startDate").descending());
         switch (BookingState.valueOf(state.toUpperCase())) {
             case ALL:
-                return isBooker ? BookingMapper.toBookingDtoList(bookingRepository.findAllByBookerIdOrderByStartDateDesc(userId))
-                        : BookingMapper.toBookingDtoList(bookingRepository.findAllByItemOwnerIdOrderByStartDateDesc(userId));
+                return isBooker ? BookingMapper.toBookingDtoList(bookingRepository.findAllByBookerId(userId, pageRequest))
+                        : BookingMapper.toBookingDtoList(bookingRepository.findAllByItemOwnerId(userId, pageRequest));
             case CURRENT:
-                return isBooker ? BookingMapper.toBookingDtoList(bookingRepository.findAllByBookerIdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(userId,
-                        LocalDateTime.now(), LocalDateTime.now()))
-                        : BookingMapper.toBookingDtoList(bookingRepository.findAllByItemOwnerIdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(userId,
-                        LocalDateTime.now(), LocalDateTime.now()));
+                return isBooker ? BookingMapper.toBookingDtoList(bookingRepository.findAllByBookerIdAndStartDateIsBeforeAndEndDateIsAfter(userId,
+                        LocalDateTime.now(), LocalDateTime.now(), pageRequest))
+                        : BookingMapper.toBookingDtoList(bookingRepository.findAllByItemOwnerIdAndStartDateIsBeforeAndEndDateIsAfter(userId,
+                        LocalDateTime.now(), LocalDateTime.now(), pageRequest));
             case FUTURE:
-                return isBooker ? BookingMapper.toBookingDtoList(bookingRepository.findAllByBookerIdAndStartDateIsAfterOrderByStartDateDesc(userId, LocalDateTime.now()))
-                        : BookingMapper.toBookingDtoList(bookingRepository.findAllByItemOwnerIdAndStartDateIsAfterOrderByStartDateDesc(userId, LocalDateTime.now()));
+                return isBooker ? BookingMapper.toBookingDtoList(bookingRepository.findAllByBookerIdAndStartDateIsAfter(userId, LocalDateTime.now(), pageRequest))
+                        : BookingMapper.toBookingDtoList(bookingRepository.findAllByItemOwnerIdAndStartDateIsAfter(userId, LocalDateTime.now(), pageRequest));
             case PAST:
-                return isBooker ? BookingMapper.toBookingDtoList(bookingRepository.findAllByBookerIdAndEndDateIsBeforeOrderByStartDateDesc(userId, LocalDateTime.now()))
-                        : BookingMapper.toBookingDtoList(bookingRepository.findAllByItemOwnerIdAndEndDateIsBeforeOrderByStartDateDesc(userId, LocalDateTime.now()));
+                return isBooker ? BookingMapper.toBookingDtoList(bookingRepository.findAllByBookerIdAndEndDateIsBefore(userId, LocalDateTime.now(), pageRequest))
+                        : BookingMapper.toBookingDtoList(bookingRepository.findAllByItemOwnerIdAndEndDateIsBefore(userId, LocalDateTime.now(), pageRequest));
             case WAITING:
-                return isBooker ? BookingMapper.toBookingDtoList(bookingRepository.findAllByBookerIdAndStatusEqualsOrderByStartDateDesc(userId, BookingStatus.WAITING))
-                        : BookingMapper.toBookingDtoList(bookingRepository.findAllByItemOwnerIdAndStatusEqualsOrderByStartDateDesc(userId, BookingStatus.WAITING));
+                return isBooker ? BookingMapper.toBookingDtoList(bookingRepository.findAllByBookerIdAndStatusEquals(userId, BookingStatus.WAITING, pageRequest))
+                        : BookingMapper.toBookingDtoList(bookingRepository.findAllByItemOwnerIdAndStatusEquals(userId, BookingStatus.WAITING, pageRequest));
             case REJECTED:
-                return isBooker ? BookingMapper.toBookingDtoList(bookingRepository.findAllByBookerIdAndStatusEqualsOrderByStartDateDesc(userId, BookingStatus.REJECTED))
-                        : BookingMapper.toBookingDtoList(bookingRepository.findAllByItemOwnerIdAndStatusEqualsOrderByStartDateDesc(userId, BookingStatus.REJECTED));
+                return isBooker ? BookingMapper.toBookingDtoList(bookingRepository.findAllByBookerIdAndStatusEquals(userId, BookingStatus.REJECTED, pageRequest))
+                        : BookingMapper.toBookingDtoList(bookingRepository.findAllByItemOwnerIdAndStatusEquals(userId, BookingStatus.REJECTED, pageRequest));
             default:
                 throw new UnknownStateException("Unknown state: UNSUPPORTED_STATUS");
         }
