@@ -35,6 +35,7 @@ public class ItemService {
     private final BookingRepository bookingRepository;
 
     private final ItemRequestRepository itemRequestRepository;
+
     public List<ItemWithCommentDto> getAllItems(Long userId) {
         if (!userStorage.existsById(userId)) {
             throw new NotFoundException("This user was not found");
@@ -83,7 +84,7 @@ public class ItemService {
 
         Item newItem = ItemMapper.toItem(item);
         newItem.setOwner(owner);
-        if(item.getRequestId()!=null) {
+        if (item.getRequestId() != null) {
             newItem.setRequest(itemRequestRepository.findById(item.getRequestId()).orElseThrow(() -> new NotFoundException("This request was not found")));
         }
         return ItemMapper.toItemDto(itemStorage.save(newItem));

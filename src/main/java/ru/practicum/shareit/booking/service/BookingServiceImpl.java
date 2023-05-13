@@ -94,7 +94,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getAllBookingsForBookerOrItemOwner(Long userId, String state, Integer from, Integer size, boolean isBooker) {
-        if(from<0 || size<=0) {
+        if (from < 0 || size <= 0) {
             throw new InvalidArgumentsException("'from' and 'size' should be positive");
         }
         checkUserExists(userId);

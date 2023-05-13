@@ -15,7 +15,7 @@ class UserMapperTest {
 
     @BeforeEach
     void setup() {
-        user= User.builder()
+        user = User.builder()
                 .id(1L)
                 .email("email@email.ru")
                 .name("name")

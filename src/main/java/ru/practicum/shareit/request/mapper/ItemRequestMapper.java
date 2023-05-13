@@ -19,6 +19,7 @@ public class ItemRequestMapper {
                 .created(itemRequest.getCreateDate())
                 .build();
     }
+
     public static ItemRequest toItemRequest(ItemRequestDto itemRequestDto) {
         return ItemRequest.builder()
                 .id(itemRequestDto.getId())
