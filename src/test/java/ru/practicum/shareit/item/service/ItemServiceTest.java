@@ -115,14 +115,15 @@ class ItemServiceTest {
 
     @Test
     void shouldGetAllItemsOrThrowException() {
+        Booking booking1 = booking;
+        booking1.setId(2L);
         Mockito.when(userRepository.existsById(user.getId())).thenReturn(true);
         assertThrows(NotFoundException.class, () -> itemService.getAllItems(2L));
 
         Mockito.when(commentRepository.existsByItemId(item.getId())).thenReturn(true);
         Mockito.when(itemRepository.findAllByOwnerId(user.getId())).thenReturn(List.of(item));
-        Mockito.when(commentRepository.getCommentsByItemId(item.getId())).thenReturn(List.of(comment));
-        Mockito.when(bookingRepository.findAllByStartDateIsAfterAndItemIdAndStatusOrderByStartDateAsc(Mockito.any(),
-                Mockito.anyLong(), Mockito.any())).thenReturn(List.of(booking));
+        Mockito.when(commentRepository.getCommentsByItemIdIn(List.of(item.getId()))).thenReturn(List.of(comment));
+        Mockito.when(bookingRepository.getBookingsByItemIdInOrderByStartDateAsc(List.of(item.getId()))).thenReturn(List.of(booking,booking1));
 
         List<ItemWithCommentDto> result = itemService.getAllItems(user.getId());
 
@@ -192,6 +193,9 @@ class ItemServiceTest {
     void shouldThrowExceptionOnDeleteNotExistsItem() {
         Mockito.when(itemRepository.existsById(item.getId())).thenReturn(true);
         assertThrows(NotFoundException.class, () -> itemService.deleteItem(2L));
+
+        itemService.deleteItem(1L);
+        Mockito.verify(itemRepository).deleteById(1L);
     }
 
     @Test

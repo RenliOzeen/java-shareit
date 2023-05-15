@@ -14,6 +14,7 @@ import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemWithCommentDto;
 import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.util.UserHeader;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,9 +38,6 @@ public class ItemControllerTest {
 
     @MockBean
     private ItemService itemService;
-
-    private static final String USERID_HEADER = "X-Sharer-User-Id";
-
     private ItemDto itemDtoInput;
     private ItemDto itemDtoOutput1;
     private ItemDto itemDtoOutput2;
@@ -107,7 +105,7 @@ public class ItemControllerTest {
                 .thenReturn(outputItems);
 
         mockMvc.perform(get("/items")
-                        .header(USERID_HEADER, 1L)
+                        .header(UserHeader.OWNER_ID, 1L)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id", is(1)))
@@ -130,7 +128,7 @@ public class ItemControllerTest {
                 .thenReturn(itemWithCommentDto1);
 
         mockMvc.perform(get("/items/{itemId}", 1L)
-                        .header(USERID_HEADER, 1L)
+                        .header(UserHeader.OWNER_ID, 1L)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)))
@@ -147,7 +145,7 @@ public class ItemControllerTest {
                 .thenReturn(itemDtoOutput1);
 
         mockMvc.perform(post("/items")
-                        .header(USERID_HEADER, 1L)
+                        .header(UserHeader.OWNER_ID, 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(itemDtoInput)))
                 .andExpect(status().isOk())
@@ -173,7 +171,7 @@ public class ItemControllerTest {
                 .thenReturn(updatedItemDto);
 
         mockMvc.perform(patch("/items/{itemId}", 1L)
-                        .header(USERID_HEADER, 1L)
+                        .header(UserHeader.OWNER_ID, 1L)
                         .content(asJsonString(itemDtoForUpdate))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -220,7 +218,7 @@ public class ItemControllerTest {
                 .thenReturn(savedCommentDto);
 
         mockMvc.perform(post("/items/{id}/comment", 1L)
-                        .header(USERID_HEADER, 1L)
+                        .header(UserHeader.OWNER_ID, 1L)
                         .content(asJsonString(newCommentDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

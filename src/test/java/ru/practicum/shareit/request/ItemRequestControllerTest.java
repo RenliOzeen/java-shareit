@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.service.ItemRequestService;
+import ru.practicum.shareit.util.UserHeader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,6 @@ class ItemRequestControllerTest {
     private MockMvc mockMvc;
     @MockBean
     private ItemRequestService itemRequestService;
-    private static final String USERID_HEADER = "X-Sharer-User-Id";
     private ItemRequestDto itemRequestDto;
 
     @BeforeEach
@@ -50,7 +50,7 @@ class ItemRequestControllerTest {
         mockMvc.perform(post("/requests")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                        .header(USERID_HEADER, 1L)
+                        .header(UserHeader.OWNER_ID, 1L)
                         .content(objectMapper.writeValueAsString(itemRequestDto)))
                 .andExpect(status().isOk());
     }
@@ -63,7 +63,7 @@ class ItemRequestControllerTest {
         mockMvc.perform(get("/requests")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                        .header(USERID_HEADER, 1L))
+                        .header(UserHeader.OWNER_ID, 1L))
                 .andExpect(status().isOk());
     }
 
@@ -75,7 +75,7 @@ class ItemRequestControllerTest {
         mockMvc.perform(get("/requests/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                        .header(USERID_HEADER, 1L))
+                        .header(UserHeader.OWNER_ID, 1L))
                 .andExpect(status().isOk());
     }
 
@@ -87,7 +87,7 @@ class ItemRequestControllerTest {
         mockMvc.perform(get("/requests/all")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                        .header(USERID_HEADER, 1L))
+                        .header(UserHeader.OWNER_ID, 1L))
                 .andExpect(status().isOk());
     }
 

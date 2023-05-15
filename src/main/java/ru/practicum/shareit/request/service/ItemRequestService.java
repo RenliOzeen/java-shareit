@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.InvalidArgumentsException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.mapper.ItemMapper;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.mapper.ItemRequestMapper;
@@ -17,7 +18,9 @@ import ru.practicum.shareit.user.repository.UserRepository;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -35,7 +38,14 @@ public class ItemRequestService {
         }
         List<ItemRequestDto> requestsToReturn = ItemRequestMapper.toItemRequestDtoList(itemRequestRepository.getItemRequestsByRequestorIsNot(user,
                 PageRequest.of((from / size), size, Sort.by("createDate").descending())));
-        requestsToReturn.forEach(r -> r.setItems(ItemMapper.toItemDtoList(itemRepository.findAllByRequestId(r.getId()))));
+        List<Long> requestIdList = itemRequestRepository.getItemRequestsByRequestorIsNot(user,
+                        PageRequest.of((from / size), size, Sort.by("createDate").descending())).stream()
+                .map(ItemRequest::getId).collect(Collectors.toList());
+        List<Item> items = itemRepository.findAllByRequestIdIn(requestIdList);
+        Map<Long, List<Item>> itemsForCurrentRequest = new HashMap<>();
+        requestIdList.forEach(id -> itemsForCurrentRequest.put(id, items.stream()
+                .filter(i -> i.getRequest().getId().equals(id)).collect(Collectors.toList())));
+        requestsToReturn.forEach(r -> r.setItems(ItemMapper.toItemDtoList(itemsForCurrentRequest.get(r.getId()))));
         return requestsToReturn.stream().filter(r -> !Objects.equals(r.getRequestOwnerId(), userId))
                 .collect(Collectors.toList());
     }
