@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingSimplyDto;
 import ru.practicum.shareit.booking.service.BookingService;
-import ru.practicum.shareit.util.UserHeader;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -15,15 +14,16 @@ import java.util.List;
 @RequestMapping("/bookings")
 public class BookingController {
     private final BookingService bookingService;
+    private static final String OWNER_ID = "X-Sharer-User-Id";
 
     @GetMapping("/{bookingId}")
-    public BookingDto getBooking(@RequestHeader(UserHeader.OWNER_ID) Long userId,
+    public BookingDto getBooking(@RequestHeader(OWNER_ID) Long userId,
                                  @PathVariable Long bookingId) {
         return bookingService.getBooking(userId, bookingId);
     }
 
     @GetMapping
-    public List<BookingDto> getAllBookingsForCurrentUser(@RequestHeader(UserHeader.OWNER_ID) Long userId,
+    public List<BookingDto> getAllBookingsForCurrentUser(@RequestHeader(OWNER_ID) Long userId,
                                                          @RequestParam(name = "state", defaultValue = "all") String state,
                                                          @RequestParam(name = "from", defaultValue = "0") Integer from,
                                                          @RequestParam(name = "size", defaultValue = "10") Integer size) {
@@ -31,12 +31,12 @@ public class BookingController {
     }
 
     @PostMapping
-    public BookingDto addBooking(@RequestHeader(UserHeader.OWNER_ID) Long userId, @RequestBody @Valid BookingSimplyDto booking) {
+    public BookingDto addBooking(@RequestHeader(OWNER_ID) Long userId, @RequestBody @Valid BookingSimplyDto booking) {
         return bookingService.addBooking(userId, booking);
     }
 
     @PatchMapping("/{bookingId}")
-    public BookingDto answerBookingRequest(@RequestHeader(UserHeader.OWNER_ID) Long userId,
+    public BookingDto answerBookingRequest(@RequestHeader(OWNER_ID) Long userId,
                                            @PathVariable Long bookingId,
                                            @RequestParam(name = "approved") Boolean approved) {
         if (approved) {
@@ -47,7 +47,7 @@ public class BookingController {
     }
 
     @GetMapping("/owner")
-    public List<BookingDto> getBookingsForCurrentOwner(@RequestHeader(UserHeader.OWNER_ID) Long userId,
+    public List<BookingDto> getBookingsForCurrentOwner(@RequestHeader(OWNER_ID) Long userId,
                                                        @RequestParam(name = "state", defaultValue = "all") String state,
                                                        @RequestParam(name = "from", defaultValue = "0") Integer from,
                                                        @RequestParam(name = "size", defaultValue = "10") Integer size) {

@@ -13,7 +13,6 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.exceptions.InvalidArgumentsException;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.util.UserHeader;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -32,6 +31,7 @@ class BookingControllerTest {
     private ObjectMapper mapper;
     @Autowired
     private MockMvc mvc;
+    private static final String OWNER_ID = "X-Sharer-User-Id";
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     @MockBean
     private BookingService bookingService;
@@ -64,7 +64,7 @@ class BookingControllerTest {
         mvc.perform(get("/bookings" + "/1")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header(UserHeader.OWNER_ID, 1L)
+                        .header(OWNER_ID, 1L)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(mapper.writeValueAsString(outputBookingDto)));
@@ -79,7 +79,7 @@ class BookingControllerTest {
         mvc.perform(get("/bookings" + "?state=ALL")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header(UserHeader.OWNER_ID, 1L)
+                        .header(OWNER_ID, 1L)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(mapper.writeValueAsString(List.of(outputBookingDto))));
@@ -91,7 +91,7 @@ class BookingControllerTest {
                 .when(bookingService.addBooking(anyLong(), any()))
                 .thenReturn(outputBookingDto);
         mvc.perform(post("/bookings")
-                        .header(UserHeader.OWNER_ID, 1L)
+                        .header(OWNER_ID, 1L)
                         .content(mapper.writeValueAsString(inputBookingDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -113,7 +113,7 @@ class BookingControllerTest {
         mvc.perform(patch("/bookings" + "/1?approved=true")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header(UserHeader.OWNER_ID, 1L)
+                        .header(OWNER_ID, 1L)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(mapper.writeValueAsString(outputBookingDto)));
@@ -126,7 +126,7 @@ class BookingControllerTest {
                 .thenThrow(new InvalidArgumentsException("Invalid arguments"));
 
         mvc.perform(patch("/bookings/{bookingId}", "1")
-                        .header(UserHeader.OWNER_ID, 1L)
+                        .header(OWNER_ID, 1L)
                         .param("approved", "true")
                         .content(mapper.writeValueAsString(outputBookingDto))
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -142,7 +142,7 @@ class BookingControllerTest {
                 .when(bookingService.addBooking(anyLong(), any()))
                 .thenReturn(outputBookingDto);
         mvc.perform(post("/bookings")
-                        .header(UserHeader.OWNER_ID, 1L)
+                        .header(OWNER_ID, 1L)
                         .content(mapper.writeValueAsString(bookingDtoWithStartBeforeCurrent))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -159,7 +159,7 @@ class BookingControllerTest {
         mvc.perform(get("/bookings" + "/owner?state=ALL")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header(UserHeader.OWNER_ID, 1L)
+                        .header(OWNER_ID, 1L)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(mapper.writeValueAsString(List.of(outputBookingDto))));

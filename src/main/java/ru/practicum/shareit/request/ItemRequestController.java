@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.service.ItemRequestService;
-import ru.practicum.shareit.util.UserHeader;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -14,10 +13,11 @@ import java.util.List;
 @RequestMapping(path = "/requests")
 public class ItemRequestController {
     private final ItemRequestService itemRequestService;
+    private static final String OWNER_ID = "X-Sharer-User-Id";
 
     @GetMapping("/all")
     public List<ItemRequestDto> findAllRequests(
-            @RequestHeader(UserHeader.OWNER_ID) Long userId,
+            @RequestHeader(OWNER_ID) Long userId,
             @RequestParam(name = "from", defaultValue = "0") Integer from,
             @RequestParam(name = "size", defaultValue = "10") Integer size
     ) {
@@ -25,18 +25,18 @@ public class ItemRequestController {
     }
 
     @GetMapping
-    public List<ItemRequestDto> getRequestsForCurrentUser(@RequestHeader(UserHeader.OWNER_ID) Long userId) {
+    public List<ItemRequestDto> getRequestsForCurrentUser(@RequestHeader(OWNER_ID) Long userId) {
         return itemRequestService.getRequestsForCurrentUser(userId);
     }
 
     @GetMapping("/{requestId}")
-    public ItemRequestDto getRequest(@RequestHeader(UserHeader.OWNER_ID) Long userId, @PathVariable Long requestId) {
+    public ItemRequestDto getRequest(@RequestHeader(OWNER_ID) Long userId, @PathVariable Long requestId) {
         return itemRequestService.getRequest(userId, requestId);
     }
 
 
     @PostMapping
-    public ItemRequestDto addRequest(@RequestHeader(UserHeader.OWNER_ID) Long userId,
+    public ItemRequestDto addRequest(@RequestHeader(OWNER_ID) Long userId,
                                      @Valid @RequestBody ItemRequestDto itemRequestDto) {
         return itemRequestService.addRequest(userId, itemRequestDto);
     }

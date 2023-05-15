@@ -7,7 +7,6 @@ import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemWithCommentDto;
 import ru.practicum.shareit.item.service.ItemService;
-import ru.practicum.shareit.util.UserHeader;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -18,27 +17,28 @@ import java.util.List;
 @Slf4j
 public class ItemController {
     private final ItemService itemService;
+    private static final String OWNER_ID = "X-Sharer-User-Id";
 
     @GetMapping
-    public List<ItemWithCommentDto> getAllItems(@RequestHeader(UserHeader.OWNER_ID) Long userId) {
+    public List<ItemWithCommentDto> getAllItems(@RequestHeader(OWNER_ID) Long userId) {
         log.info("Получен запрос на получение списка всех вещей");
         return itemService.getAllItems(userId);
     }
 
     @GetMapping("/{itemId}")
-    public ItemWithCommentDto getItem(@PathVariable Long itemId, @RequestHeader(UserHeader.OWNER_ID) Long userId) {
+    public ItemWithCommentDto getItem(@PathVariable Long itemId, @RequestHeader(OWNER_ID) Long userId) {
         log.info("Получен запрос на получение вещи по ее id");
         return itemService.getItem(itemId, userId);
     }
 
     @PostMapping
-    public ItemDto addItem(@RequestHeader(UserHeader.OWNER_ID) Long userId, @Valid @RequestBody ItemDto item) {
+    public ItemDto addItem(@RequestHeader(OWNER_ID) Long userId, @Valid @RequestBody ItemDto item) {
         log.info("Получен запрос на создание вещи");
         return itemService.addItem(userId, item);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto updateItem(@RequestHeader(UserHeader.OWNER_ID) Long userId,
+    public ItemDto updateItem(@RequestHeader(OWNER_ID) Long userId,
                               @PathVariable Long itemId,
                               @RequestBody ItemDto item) {
         log.info("Получен запрос на обновление вещи");
@@ -58,7 +58,7 @@ public class ItemController {
     }
 
     @PostMapping("/{itemId}/comment")
-    public CommentDto addComment(@RequestHeader(UserHeader.OWNER_ID) Long userId, @PathVariable Long itemId,
+    public CommentDto addComment(@RequestHeader(OWNER_ID) Long userId, @PathVariable Long itemId,
                                  @RequestBody @Valid CommentDto commentDto) {
         log.info("Получен запрос на добавление комментария");
         return itemService.addComment(userId, itemId, commentDto);
