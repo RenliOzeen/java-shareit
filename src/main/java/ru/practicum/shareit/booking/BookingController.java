@@ -13,29 +13,30 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/bookings")
 public class BookingController {
-
-    private static final String USERID_HEADER = "X-Sharer-User-Id";
     private final BookingService bookingService;
+    private static final String OWNER_ID = "X-Sharer-User-Id";
 
     @GetMapping("/{bookingId}")
-    public BookingDto getBooking(@RequestHeader(USERID_HEADER) Long userId,
+    public BookingDto getBooking(@RequestHeader(OWNER_ID) Long userId,
                                  @PathVariable Long bookingId) {
         return bookingService.getBooking(userId, bookingId);
     }
 
     @GetMapping
-    public List<BookingDto> getAllBookingsForCurrentUser(@RequestHeader(USERID_HEADER) Long userId,
-                                                         @RequestParam(name = "state", defaultValue = "all") String state) {
-        return bookingService.getAllBookingsForBookerOrItemOwner(userId, state, true);
+    public List<BookingDto> getAllBookingsForCurrentUser(@RequestHeader(OWNER_ID) Long userId,
+                                                         @RequestParam(name = "state", defaultValue = "all") String state,
+                                                         @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                                         @RequestParam(name = "size", defaultValue = "10") Integer size) {
+        return bookingService.getAllBookingsForBookerOrItemOwner(userId, state, from, size, true);
     }
 
     @PostMapping
-    public BookingDto addBooking(@RequestHeader(USERID_HEADER) Long userId, @RequestBody @Valid BookingSimplyDto booking) {
+    public BookingDto addBooking(@RequestHeader(OWNER_ID) Long userId, @RequestBody @Valid BookingSimplyDto booking) {
         return bookingService.addBooking(userId, booking);
     }
 
     @PatchMapping("/{bookingId}")
-    public BookingDto answerBookingRequest(@RequestHeader(USERID_HEADER) Long userId,
+    public BookingDto answerBookingRequest(@RequestHeader(OWNER_ID) Long userId,
                                            @PathVariable Long bookingId,
                                            @RequestParam(name = "approved") Boolean approved) {
         if (approved) {
@@ -46,9 +47,11 @@ public class BookingController {
     }
 
     @GetMapping("/owner")
-    public List<BookingDto> getBookingsForCurrentOwner(@RequestHeader(USERID_HEADER) Long userId,
-                                                       @RequestParam(name = "state", defaultValue = "all") String state) {
+    public List<BookingDto> getBookingsForCurrentOwner(@RequestHeader(OWNER_ID) Long userId,
+                                                       @RequestParam(name = "state", defaultValue = "all") String state,
+                                                       @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                                       @RequestParam(name = "size", defaultValue = "10") Integer size) {
 
-        return bookingService.getAllBookingsForBookerOrItemOwner(userId, state, false);
+        return bookingService.getAllBookingsForBookerOrItemOwner(userId, state, from, size, false);
     }
 }

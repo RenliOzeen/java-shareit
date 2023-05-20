@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.repository;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.booking.model.Booking;
@@ -10,30 +11,34 @@ import java.util.List;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
-    List<Booking> findAllByBookerIdOrderByStartDateDesc(Long bookerId);
+    List<Booking> findAllByBookerId(Long bookerId, PageRequest pageRequest);
 
-    List<Booking> findAllByBookerIdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(Long bookerId, LocalDateTime start,
-                                                                                             LocalDateTime end);
+    List<Booking> findAllByBookerIdAndStartDateIsBeforeAndEndDateIsAfter(Long bookerId, LocalDateTime start,
+                                                                         LocalDateTime end, PageRequest pageRequest);
 
-    List<Booking> findAllByBookerIdAndEndDateIsBeforeOrderByStartDateDesc(Long bookerId, LocalDateTime end);
+    List<Booking> findAllByBookerIdAndEndDateIsBefore(Long bookerId, LocalDateTime end, PageRequest pageRequest);
 
-    List<Booking> findAllByBookerIdAndStartDateIsAfterOrderByStartDateDesc(Long bookerId, LocalDateTime start);
+    List<Booking> findAllByBookerIdAndStartDateIsAfter(Long bookerId, LocalDateTime start,
+                                                                           PageRequest pageRequest);
 
-    List<Booking> findAllByBookerIdAndStatusEqualsOrderByStartDateDesc(Long bookerId, BookingStatus status);
+    List<Booking> findAllByBookerIdAndStatusEquals(Long bookerId, BookingStatus status, PageRequest pageRequest);
 
-    List<Booking> findAllByItemOwnerIdOrderByStartDateDesc(Long ownerId);
+    List<Booking> findAllByItemOwnerId(Long ownerId, PageRequest pageRequest);
 
-    List<Booking> findAllByItemOwnerIdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(Long ownerId, LocalDateTime start, LocalDateTime end);
+    List<Booking> findAllByItemOwnerIdAndStartDateIsBeforeAndEndDateIsAfter(Long ownerId, LocalDateTime start,
+                                                                            LocalDateTime end, PageRequest pageRequest);
 
-    List<Booking> findAllByItemOwnerIdAndEndDateIsBeforeOrderByStartDateDesc(Long ownerId, LocalDateTime start);
+    List<Booking> findAllByItemOwnerIdAndEndDateIsBefore(Long ownerId, LocalDateTime start, PageRequest pageRequest);
 
-    List<Booking> findAllByItemOwnerIdAndStartDateIsAfterOrderByStartDateDesc(Long ownerId, LocalDateTime start);
+    List<Booking> findAllByItemOwnerIdAndStartDateIsAfter(Long ownerId, LocalDateTime start, PageRequest pageRequest);
 
-    List<Booking> findAllByItemOwnerIdAndStatusEqualsOrderByStartDateDesc(Long ownerId, BookingStatus status);
+    List<Booking> findAllByItemOwnerIdAndStatusEquals(Long ownerId, BookingStatus status, PageRequest pageRequest);
 
-    List<Booking> findAllByBookerIdAndEndDateIsBefore(Long bookerId, LocalDateTime endDate);
+    List<Booking> findAllByBookerIdAndEndDateIsBeforeOrderByStartDateDesc(Long bookerId, LocalDateTime endDate);
 
     List<Booking> findAllByStartDateIsAfterAndItemIdAndStatusOrderByStartDateAsc(LocalDateTime startDate, Long itemId, BookingStatus status);
 
     List<Booking> findAllByStartDateIsBeforeAndItemIdAndStatusOrderByStartDateDesc(LocalDateTime startDate, Long itemId, BookingStatus status);
+
+    List<Booking> getBookingsByItemIdInOrderByStartDateAsc(List<Long> itemIdList);
 }
