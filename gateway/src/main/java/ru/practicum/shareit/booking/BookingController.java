@@ -24,7 +24,7 @@ public class BookingController {
     private final BookingClient bookingClient;
 
     @PostMapping
-    public ResponseEntity<Object> save(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ResponseEntity<Object> save(@RequestHeader("X-Sharer-User-Id") Long userId,
                                        @RequestBody @Valid BookItemRequest bookItemRequest) {
         log.info("Create booking {} by userId={}", bookItemRequest, userId);
         return bookingClient.save(userId, bookItemRequest);
@@ -32,38 +32,38 @@ public class BookingController {
 
     @PatchMapping("{bookingId}")
     public ResponseEntity<Object> update(@PathVariable Long bookingId,
-                                         @RequestHeader("X-Sharer-User-Id") long userId,
+                                         @RequestHeader("X-Sharer-User-Id") Long userId,
                                          @RequestParam(name = "approved") boolean isApprove) {
         log.info("Update bookingId={}", bookingId);
         return bookingClient.update(bookingId, userId, isApprove);
     }
 
     @GetMapping("/{bookingId}")
-    public ResponseEntity<Object> findById(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ResponseEntity<Object> findById(@RequestHeader("X-Sharer-User-Id") Long userId,
                                            @PathVariable Long bookingId) {
         log.info("Find booking {}, userId={}", bookingId, userId);
         return bookingClient.findById(bookingId, userId);
     }
 
     @GetMapping
-    public ResponseEntity<Object> getBookingsForCurrentUser(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ResponseEntity<Object> getBookingsForCurrentUser(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                             @RequestParam(name = "state", defaultValue = "all") String state,
                                                             @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
                                                             @Positive @RequestParam(defaultValue = "10") Integer size) {
 
-        BookingState bookingState = Arrays.stream(BookingState.values()).filter(s -> s.name().toUpperCase().equals(state)).findFirst()
+        BookingState bookingState = Arrays.stream(BookingState.values()).filter(s -> s.name().equals(state.toUpperCase())).findFirst()
                 .orElseThrow(() -> new UnknownStateException("Unknown state: " + state));
         log.info("get all bookings for current user with bookingState {}, userId={}, from={}, size={}", state, userId, from, size);
         return bookingClient.getAllBookingsForCurrentUser(userId, bookingState, from, size);
     }
 
     @GetMapping("/owner")
-    public ResponseEntity<Object> getBookingsForCurrentOwner(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ResponseEntity<Object> getBookingsForCurrentOwner(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                              @RequestParam(defaultValue = "ALL") String state,
                                                              @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
                                                              @Positive @RequestParam(defaultValue = "10") Integer size) {
 
-        BookingState bookingState = Arrays.stream(BookingState.values()).filter(s -> s.name().toUpperCase().equals(state)).findFirst()
+        BookingState bookingState = Arrays.stream(BookingState.values()).filter(s -> s.name().equals(state.toUpperCase())).findFirst()
                 .orElseThrow(() -> new UnknownStateException("Unknown state: " + state));
         log.info("Get all bookings by userId={}", userId);
         return bookingClient.getAllBookingsForCurrentOwner(userId, bookingState, from, size);

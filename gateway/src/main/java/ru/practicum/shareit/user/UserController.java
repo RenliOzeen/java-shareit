@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserForUpdateDto;
 
 @RestController
 @Slf4j
@@ -22,20 +23,20 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity<Object> update(@PathVariable("userId") long userId,
-                                         @RequestBody UserDto userDto) {
+    public ResponseEntity<Object> update(@PathVariable("userId") Long userId,
+                                         @RequestBody UserForUpdateDto userDto) {
         log.info("Update user by userId={}", userId);
         return userClient.update(userId, userDto);
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<Object> delete(@PathVariable("userId") long userId) {
+    public ResponseEntity<Object> delete(@PathVariable("userId") Long userId) {
         log.info("Delete user by userId={}", userId);
         return userClient.delete(userId);
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<Object> getUser(@PathVariable("userId") long userId) {
+    public ResponseEntity<Object> getUser(@PathVariable("userId") Long userId) {
         log.info("Get user by userId={}", userId);
         return userClient.getUser(userId);
     }

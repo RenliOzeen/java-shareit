@@ -40,8 +40,8 @@ public class ItemService {
         if (!userStorage.existsById(userId)) {
             throw new NotFoundException("This user was not found");
         }
-        List<ItemWithCommentDto> itemWithCommentDtoList = ItemMapper.toItemWithCommentDtoList(itemStorage.findAllByOwnerId(userId));
-        List<Long> itemIdList = itemStorage.findAllByOwnerId(userId).stream().map(Item::getId).collect(Collectors.toList());
+        List<ItemWithCommentDto> itemWithCommentDtoList = ItemMapper.toItemWithCommentDtoList(itemStorage.findAllByOwnerIdOrderByIdAsc(userId));
+        List<Long> itemIdList = itemStorage.findAllByOwnerIdOrderByIdAsc(userId).stream().map(Item::getId).collect(Collectors.toList());
         List<Comment> commentList = commentRepository.getCommentsByItemIdIn(itemIdList);
         List<Booking> bookings = bookingRepository.getBookingsByItemIdInOrderByStartDateAsc(itemIdList);
         Map<Long, List<Comment>> commentsForCurrentItem = new HashMap<>();
