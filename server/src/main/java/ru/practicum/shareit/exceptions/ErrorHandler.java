@@ -2,7 +2,6 @@ package ru.practicum.shareit.exceptions;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -34,15 +33,8 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleValidationException(final MethodArgumentNotValidException e) {
-        log.debug("Получен статус 400 Bad request {}", e.getMessage(), e);
-        return Map.of("400 BAD REQUEST", e.getMessage());
-    }
-
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> handleUserValidationException(final UserValidationException e) {
+    public Map<String, String> handleValidationException(final ValidationException e) {
         log.debug("Получен статус 404 Not found {}", e.getMessage(), e);
         return Map.of("404 USER NOT VALID", e.getMessage());
     }

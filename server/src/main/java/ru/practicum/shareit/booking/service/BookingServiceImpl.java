@@ -14,7 +14,7 @@ import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exceptions.InvalidArgumentsException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.UnknownStateException;
-import ru.practicum.shareit.exceptions.UserValidationException;
+import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
@@ -40,11 +40,9 @@ public class BookingServiceImpl implements BookingService {
         if (!item.getAvailable()) {
             throw new InvalidArgumentsException("Item is unavailable");
         }
-        if (booking.getEnd().isBefore(booking.getStart()) || booking.getEnd().equals(booking.getStart())) {
-            throw new InvalidArgumentsException("End date before start date");
-        }
+
         if (Objects.equals(item.getOwner().getId(), userId)) {
-            throw new UserValidationException("Booker is the owner of item");
+            throw new ValidationException("Booker is the owner of item");
         }
         return BookingMapper.toBookingDto(bookingRepository.save(BookingMapper.toBooking(booking, item, user)));
     }
@@ -55,7 +53,7 @@ public class BookingServiceImpl implements BookingService {
         checkUserExists(userId);
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException("Booking was not found"));
         if (!Objects.equals(booking.getItem().getOwner().getId(), userId)) {
-            throw new UserValidationException("This user is not the owner for this item");
+            throw new ValidationException("This user is not the owner for this item");
         }
         if (booking.getStatus().equals(BookingStatus.APPROVED)) {
             throw new InvalidArgumentsException("Booking already approved");
@@ -94,9 +92,6 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getAllBookingsForBookerOrItemOwner(Long userId, String state, Integer from, Integer size, boolean isBooker) {
-        if (from < 0 || size <= 0) {
-            throw new InvalidArgumentsException("'from' and 'size' should be positive");
-        }
         checkUserExists(userId);
         try {
             BookingState.valueOf(state.toUpperCase());

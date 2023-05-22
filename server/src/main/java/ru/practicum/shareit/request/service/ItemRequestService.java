@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exceptions.InvalidArgumentsException;
 import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
@@ -34,7 +34,7 @@ public class ItemRequestService {
     public List<ItemRequestDto> findAllRequests(Long userId, Integer from, Integer size) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("This user was not found"));
         if (from < 0 || size <= 0) {
-            throw new InvalidArgumentsException("'from' and 'size' should be positive");
+            throw new ValidationException("'from' and 'size' should be positive");
         }
         List<ItemRequestDto> requestsToReturn = ItemRequestMapper.toItemRequestDtoList(itemRequestRepository.getItemRequestsByRequestorIsNot(user,
                 PageRequest.of((from / size), size, Sort.by("createDate").descending())));

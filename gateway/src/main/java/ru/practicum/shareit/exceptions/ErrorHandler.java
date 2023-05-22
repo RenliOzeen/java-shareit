@@ -13,13 +13,6 @@ import java.util.Map;
 @Slf4j
 public class ErrorHandler {
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Map<String, String> handleException(final Exception e) {
-        log.debug("Получен статус 500 internal server error {}", e.getMessage(), e);
-        return Map.of("500 INTERNAL SERVER ERROR", e.getMessage());
-    }
-
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleValidationException(final MethodArgumentNotValidException e) {
         log.debug("Получен статус 400 Bad request {}", e.getMessage(), e);
@@ -27,9 +20,9 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Map<String, String> handleUnknownStateException(final UnknownStateException e) {
-        log.debug("Получен статус 500 internal server error {}", e.getMessage(), e);
-        return Map.of("error", e.getMessage());
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleInvalidArgsException(final InvalidArgumentsException e) {
+        log.debug("Получен статус 400 bad request {}", e.getMessage(), e);
+        return Map.of("400 BAD REQUEST", e.getMessage());
     }
 }

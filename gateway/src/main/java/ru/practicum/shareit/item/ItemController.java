@@ -25,7 +25,7 @@ public class ItemController {
     private final ItemClient itemClient;
 
     @PostMapping
-    public ResponseEntity<Object> saveItem(@RequestBody ItemDto itemDto,
+    public ResponseEntity<Object> saveItem(@RequestBody @Valid ItemDto itemDto,
                                            @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Create item by userId={}", userId);
         return itemClient.saveItem(itemDto, userId);

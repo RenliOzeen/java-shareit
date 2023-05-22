@@ -7,13 +7,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookItemRequest;
-import ru.practicum.shareit.booking.dto.BookingState;
-import ru.practicum.shareit.exceptions.UnknownStateException;
+import ru.practicum.shareit.exceptions.InvalidArgumentsException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
-import java.util.Arrays;
 
 @Controller
 @Slf4j
@@ -26,6 +24,11 @@ public class BookingController {
     @PostMapping
     public ResponseEntity<Object> save(@RequestHeader("X-Sharer-User-Id") Long userId,
                                        @RequestBody @Valid BookItemRequest bookItemRequest) {
+
+        if (bookItemRequest.getEnd().isBefore(bookItemRequest.getStart()) || bookItemRequest.getEnd().equals(bookItemRequest.getStart())) {
+            throw new InvalidArgumentsException("End date before start date");
+        }
+
         log.info("Create booking {} by userId={}", bookItemRequest, userId);
         return bookingClient.save(userId, bookItemRequest);
     }
@@ -51,10 +54,12 @@ public class BookingController {
                                                             @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
                                                             @Positive @RequestParam(defaultValue = "10") Integer size) {
 
-        BookingState bookingState = Arrays.stream(BookingState.values()).filter(s -> s.name().equals(state.toUpperCase())).findFirst()
-                .orElseThrow(() -> new UnknownStateException("Unknown state: " + state));
+        if (from < 0 || size <= 0) {
+            throw new InvalidArgumentsException("'from' and 'size' should be positive");
+        }
+
         log.info("get all bookings for current user with bookingState {}, userId={}, from={}, size={}", state, userId, from, size);
-        return bookingClient.getAllBookingsForCurrentUser(userId, bookingState, from, size);
+        return bookingClient.getAllBookingsForCurrentUser(userId, state, from, size);
     }
 
     @GetMapping("/owner")
@@ -63,9 +68,7 @@ public class BookingController {
                                                              @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
                                                              @Positive @RequestParam(defaultValue = "10") Integer size) {
 
-        BookingState bookingState = Arrays.stream(BookingState.values()).filter(s -> s.name().equals(state.toUpperCase())).findFirst()
-                .orElseThrow(() -> new UnknownStateException("Unknown state: " + state));
         log.info("Get all bookings by userId={}", userId);
-        return bookingClient.getAllBookingsForCurrentOwner(userId, bookingState, from, size);
+        return bookingClient.getAllBookingsForCurrentOwner(userId, state, from, size);
     }
 }

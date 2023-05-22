@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserForUpdateDto;
 
+import javax.validation.Valid;
+
 @RestController
 @Slf4j
 @Validated
@@ -17,14 +19,14 @@ public class UserController {
     private final UserClient userClient;
 
     @PostMapping
-    public ResponseEntity<Object> save(@RequestBody UserDto userDto) {
+    public ResponseEntity<Object> save(@RequestBody @Valid UserDto userDto) {
         log.info("Create user {}", userDto);
         return userClient.save(userDto);
     }
 
     @PatchMapping("/{userId}")
     public ResponseEntity<Object> update(@PathVariable("userId") Long userId,
-                                         @RequestBody UserForUpdateDto userDto) {
+                                         @RequestBody @Valid UserForUpdateDto userDto) {
         log.info("Update user by userId={}", userId);
         return userClient.update(userId, userDto);
     }
